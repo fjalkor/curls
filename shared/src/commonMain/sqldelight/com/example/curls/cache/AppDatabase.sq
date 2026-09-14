@@ -1,0 +1,15 @@
+CREATE TABLE MuscleGroup (
+    id INTEGER NOT NULL,
+    name TEXT NOT NULL
+);
+
+insertMuscleGroup:
+INSERT INTO MuscleGroup(id, name)
+VALUES (?, ?);
+
+removeAllMuscleGroups:
+DELETE FROM MuscleGroup;
+
+selectAllMuscleGroups:
+SELECT *
+FROM MuscleGroup;
