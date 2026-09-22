@@ -4,8 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.curls.features.exercises.ExercisesScreen
-import com.example.curls.features.exercises.ExercisesViewModel
+import com.example.curls.features.exercises.ui.ExercisesScreen
+import com.example.curls.features.exercises.ui.ExercisesViewModel
 import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
 

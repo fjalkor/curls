@@ -1,7 +1,7 @@
 package com.example.curls.cache
 
 import app.cash.sqldelight.coroutines.asFlow
-import com.example.curls.features.exercises.network.mappers.ExerciseDetailedLocal
+import com.example.curls.features.exercises.datasource.network.mappers.ExerciseDetailedLocal
 
 class Database(driverFactory: DatabaseDriverFactory) {
     private val db = AppDatabase(driverFactory.createDriver())
@@ -43,7 +43,7 @@ class Database(driverFactory: DatabaseDriverFactory) {
         name = equipment.name,
     )
 
-    fun insertExercises(dtos: List<ExerciseDetailedLocal>) {
+    fun insertExercises(dtos: List<com.example.curls.features.exercises.datasource.network.mappers.ExerciseDetailedLocal>) {
         db.transaction {
             dtos.forEach { exercise ->
                 queries.insertExercise(exercise.id, exercise.categoryId)
