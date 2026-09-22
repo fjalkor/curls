@@ -1,15 +1,175 @@
-CREATE TABLE MuscleGroup (
-    id INTEGER NOT NULL,
+import kotlin.Boolean;
+
+CREATE TABLE Muscle (
+    id INTEGER NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    nameEn TEXT,
+    isFront INTEGER AS Boolean NOT NULL,
+    imageUrlMain TEXT,
+    imageUrlSecondary TEXT
+);
+
+CREATE TABLE Category (
+    id INTEGER NOT NULL PRIMARY KEY,
     name TEXT NOT NULL
 );
 
-insertMuscleGroup:
-INSERT INTO MuscleGroup(id, name)
+CREATE TABLE Equipment (
+    id INTEGER NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL
+);
+
+CREATE TABLE Exercise (
+    id INTEGER NOT NULL PRIMARY KEY,
+    categoryId INTEGER NOT NULL,
+    FOREIGN KEY(categoryId) REFERENCES Category(id)
+);
+
+CREATE TABLE Image (
+    id INTEGER NOT NULL PRIMARY KEY,
+    exerciseId INTEGER NOT NULL,
+    imageUrl TEXT NOT NULL,
+    thumbnailSmall TEXT,
+    thumbnailMedium TEXT,
+    FOREIGN KEY(exerciseId) REFERENCES Exercise(id)
+);
+
+CREATE TABLE Translation (
+    id INTEGER NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    exerciseId INTEGER NOT NULL,
+    description TEXT,
+    languageId INTEGER NOT NULL,
+    FOREIGN KEY(exerciseId) REFERENCES Exercise(id) ON DELETE CASCADE
+);
+
+CREATE TABLE Video (
+    id INTEGER NOT NULL PRIMARY KEY,
+    exerciseId INTEGER NOT NULL,
+    videoUrl TEXT NOT NULL,
+    size INTEGER NOT NULL,
+    duration TEXT,
+    width INTEGER NOT NULL,
+    height INTEGER NOT NULL,
+    codec TEXT,
+    codecLong TEXT,
+    FOREIGN KEY(exerciseId) REFERENCES Exercise(id)
+);
+
+CREATE TABLE MuscleExerciseCrossRef (
+    exerciseId INTEGER NOT NULL,
+    muscleId INTEGER NOT NULL,
+    PRIMARY KEY(exerciseId, muscleId),
+    FOREIGN KEY(exerciseId) REFERENCES Exercise(id) ON DELETE CASCADE,
+    FOREIGN KEY(muscleId) REFERENCES Muscle(id) ON DELETE CASCADE
+);
+
+CREATE TABLE MuscleSecondaryExerciseCrossRef (
+    exerciseId INTEGER NOT NULL,
+    muscleId INTEGER NOT NULL,
+    PRIMARY KEY(exerciseId, muscleId),
+    FOREIGN KEY(exerciseId) REFERENCES Exercise(id) ON DELETE CASCADE,
+    FOREIGN KEY(muscleId) REFERENCES Muscle(id) ON DELETE CASCADE
+);
+
+CREATE TABLE EquipmentExerciseCrossRef (
+    exerciseId INTEGER NOT NULL,
+    equipmentId INTEGER NOT NULL,
+    PRIMARY KEY(exerciseId, equipmentId),
+    FOREIGN KEY(exerciseId) REFERENCES Exercise(id) ON DELETE CASCADE,
+    FOREIGN KEY(equipmentId) REFERENCES Equipment(id) ON DELETE CASCADE
+);
+
+-- CREATE TABLE ImageExcerciseCrossRef (
+--     exerciseId INTEGER NOT NULL,
+--     imageId INTEGER NOT NULL,
+--     PRIMARY KEY(exerciseId, imageId),
+--     FOREIGN KEY(exerciseId) REFERENCES Exercise(id) ON DELETE CASCADE,
+--     FOREIGN KEY(imageId) REFERENCES Image(id) ON DELETE CASCADE
+-- );
+
+-- CREATE TABLE TranslationExcerciseCrossRef (
+--     exerciseId INTEGER NOT NULL,
+--     translationId INTEGER NOT NULL,
+--     PRIMARY KEY(exerciseId, translationId),
+--     FOREIGN KEY(exerciseId) REFERENCES Exercise(id) ON DELETE CASCADE,
+--     FOREIGN KEY(translationId) REFERENCES Translation(id) ON DELETE CASCADE
+-- );
+
+-- CREATE TABLE VideoExcerciseCrossRef (
+--     exerciseId INTEGER NOT NULL,
+--     videoId INTEGER NOT NULL,
+--     PRIMARY KEY(exerciseId, videoId),
+--     FOREIGN KEY(exerciseId) REFERENCES Exercise(id) ON DELETE CASCADE,
+--     FOREIGN KEY(videoId) REFERENCES Video(id) ON DELETE CASCADE
+-- );
+
+insertCategory:
+INSERT OR REPLACE INTO Category(id, name)
 VALUES (?, ?);
 
-removeAllMuscleGroups:
-DELETE FROM MuscleGroup;
+insertMuscle:
+INSERT OR REPLACE INTO Muscle(id, name, nameEn, isFront, imageUrlMain, imageUrlSecondary)
+VALUES (?, ?, ?, ?, ?, ?);
 
-selectAllMuscleGroups:
-SELECT *
-FROM MuscleGroup;
+insertEquipment:
+INSERT OR REPLACE INTO Equipment(id, name)
+VALUES (?, ?);
+
+selectAllCategories:
+SELECT * FROM Category;
+
+selectAllEquipment:
+SELECT * FROM Equipment;
+
+selectAllMuscles:
+SELECT * FROM Muscle;
+
+selectAllExercises:
+SELECT * FROM Exercise;
+
+selectAllImages:
+SELECT * FROM Image;
+
+selectAllTranslations:
+SELECT * FROM Translation;
+
+selectAllVideos:
+SELECT * FROM Video;
+
+selectAllMuscleCrossRefs:
+SELECT * FROM MuscleExerciseCrossRef;
+
+selectAllSecondaryMuscleCrossRefs:
+SELECT * FROM MuscleSecondaryExerciseCrossRef;
+
+selectAllEquipmentCrossRefs:
+SELECT * FROM EquipmentExerciseCrossRef;
+
+insertExercise:
+INSERT OR REPLACE INTO Exercise(id, categoryId)
+VALUES (?, ?);
+
+insertTranslation:
+INSERT OR REPLACE INTO Translation(id, name, exerciseId, description, languageId)
+VALUES (?, ?, ?, ?, ?);
+
+insertImage:
+INSERT OR REPLACE INTO Image(id, exerciseId, imageUrl, thumbnailSmall, thumbnailMedium)
+VALUES (?, ?, ?, ?, ?);
+
+insertVideo:
+INSERT OR REPLACE INTO Video(id, exerciseId, videoUrl, size, duration, width, height, codec, codecLong)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+insertMuscleCrossRef:
+INSERT OR REPLACE INTO MuscleExerciseCrossRef(exerciseId, muscleId)
+VALUES (?, ?);
+
+insertMuscleSecondaryCrossRef:
+INSERT OR REPLACE INTO MuscleSecondaryExerciseCrossRef(exerciseId, muscleId)
+VALUES (?, ?);
+
+insertEquipmentCrossRef:
+INSERT OR REPLACE INTO EquipmentExerciseCrossRef(exerciseId, equipmentId)
+VALUES (?, ?);
