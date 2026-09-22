@@ -54,6 +54,7 @@ kotlin {
             implementation(libs.sqldelight.native.driver)
         }
         commonMain.dependencies {
+            implementation(libs.navigation.compose)
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
             implementation(libs.compose.material3)
@@ -62,6 +63,9 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+            implementation(libs.coil.network.ktor)
+            implementation(libs.coil.compose)
+            implementation(libs.richeditor.compose)
 
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.ktor.client.core)
@@ -69,6 +73,7 @@ kotlin {
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.sqldelight.runtime)
             implementation(libs.kotlinx.datetime)
+            implementation(libs.sqldelight.coroutines.extensions)
             implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)
 
