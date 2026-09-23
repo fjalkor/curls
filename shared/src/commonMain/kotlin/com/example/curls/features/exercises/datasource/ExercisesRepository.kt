@@ -13,6 +13,7 @@ import com.example.curls.cache.Translation
 import com.example.curls.cache.Video
 import com.example.curls.features.exercises.datasource.domain.Exercise
 import com.example.curls.features.exercises.datasource.domain.mappers.toCategoryDomain
+import com.example.curls.features.exercises.datasource.domain.mappers.toEquipmentDomain
 import com.example.curls.features.exercises.datasource.domain.mappers.toExerciseDomain
 import com.example.curls.features.exercises.datasource.network.ExercisesApi
 import com.example.curls.features.exercises.datasource.network.mappers.ExerciseDetailedLocal
@@ -117,9 +118,10 @@ class ExercisesRepository(private val api: ExercisesApi, private val db: Databas
     }
 
     fun getCategoriesFlow() = db.getCategoriesFlow().mapToList(Dispatchers.IO)
-        .map { listOfCategories ->
-            listOfCategories.map { it.toCategoryDomain() }
-        }
+        .map { listOfCategories -> listOfCategories.map { it.toCategoryDomain() } }
+
+    fun getEquipmentFlow() = db.getEquipmentFlow().mapToList(Dispatchers.IO)
+        .map { listOfCategories -> listOfCategories.map { it.toEquipmentDomain() } }
 
     private fun CoroutineScope.populateCategoriesTask() = async {
         if (db.getCategories().isEmpty())

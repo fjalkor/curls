@@ -1,22 +1,34 @@
 package com.example.curls.features.exercises.ui
 
-import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.curls.features.exercises.datasource.ExercisesRepository
+import com.example.curls.features.exercises.datasource.domain.Category
+import com.example.curls.features.exercises.datasource.domain.Equipment
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ExercisesViewModel(private val repository: ExercisesRepository) : ViewModel() {
-    val state = ExercisesScreenState()
-    private val selectedCategoriesFlow = snapshotFlow { state.selectedCategories.value }
 
-    private val exercisesFlow = repository.exercisesFlow
-        .combine(selectedCategoriesFlow) { exercises, categories ->
-            exercises.filter { categories.isEmpty() || it.category in categories }
+    val uiState: StateFlow<ExercisesScreenUiState>
+    field = MutableStateFlow(ExercisesScreenUiState())
+
+    private val exercisesFlow = combine(
+        repository.exercisesFlow,
+        uiState.map { it.selectedCategories }.distinctUntilChanged(),
+        uiState.map { it.selectedEquipment }.distinctUntilChanged(),
+        ) { exercises, selectedCategories, selectedEquipment ->
+            exercises
+                .filter { it.category in selectedCategories }
+                .filter { it.equipment.all { equipment -> equipment in selectedEquipment } }
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -27,6 +39,15 @@ class ExercisesViewModel(private val repository: ExercisesRepository) : ViewMode
         initRepository()
         observeExercises()
         observeCategories()
+        observeEquipment()
+    }
+
+    fun selectEquipment(equipment: List<Equipment>) = uiState.update {
+        it.copy(selectedEquipment = equipment)
+    }
+
+    fun selectCategories(categories: List<Category>) = uiState.update {
+        it.copy(selectedCategories = categories)
     }
 
     private fun initRepository() = viewModelScope.launch {
@@ -34,12 +55,20 @@ class ExercisesViewModel(private val repository: ExercisesRepository) : ViewMode
     }
 
     private fun observeExercises() = viewModelScope.launch {
-        exercisesFlow.collectLatest { state.exercises.value = it }
+        exercisesFlow.collectLatest { exercises ->
+            uiState.update { it.copy(exercises = exercises) }
+        }
     }
 
     private fun observeCategories() = viewModelScope.launch {
-        repository.getCategoriesFlow().collectLatest {
-            state.categories.value = it
+        repository.getCategoriesFlow().collectLatest { categories ->
+            uiState.update { it.copy(availableCategories = categories) }
+        }
+    }
+
+    private fun observeEquipment() = viewModelScope.launch {
+        repository.getEquipmentFlow().collectLatest { equipment ->
+            uiState.update { it.copy(availableEquipment = equipment) }
         }
     }
 }

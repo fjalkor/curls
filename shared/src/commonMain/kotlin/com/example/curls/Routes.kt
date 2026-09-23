@@ -1,10 +1,11 @@
 package com.example.curls
 
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.curls.features.exercises.ui.ExercisesScreen
+import com.example.curls.features.exercises.ui.ChooseExercisePager
 import com.example.curls.features.exercises.ui.ExercisesViewModel
 import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
@@ -22,7 +23,13 @@ fun Routes() {
     NavHost(navHostController, startDestination = Screen.Home) {
         composable<Screen.Home> {
             val viewModel = koinViewModel<ExercisesViewModel>()
-            ExercisesScreen(viewModel.state)
+            val state = viewModel.uiState.collectAsStateWithLifecycle()
+
+            ChooseExercisePager(
+                state = state.value,
+                onEquipmentSelected = viewModel::selectEquipment,
+                onCategoriesSelected = viewModel::selectCategories,
+            )
         }
     }
 }

@@ -1,0 +1,5 @@
+<resources>
+    <string name="button_label_confirm">Confirm</string>
+    <string name="choose_exercise_first_page_title">What equipment do you have?</string>
+    <string name="choose_exercise_second_page_title">What do you want to train?</string>
+</resources>

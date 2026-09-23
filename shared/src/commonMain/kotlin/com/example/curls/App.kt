@@ -2,6 +2,7 @@ package com.example.curls
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,7 +22,7 @@ fun App() {
     }
     AppTheme {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().systemBarsPadding(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Routes()
