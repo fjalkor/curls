@@ -11,8 +11,21 @@ struct ComposeView: UIViewControllerRepresentable {
 }
 
 struct ContentView: View {
+    @StateObject var appSettings = UiEngineSettingsWrapper()
+    @StateObject var exercisesViewModel = ExercisesViewModelWrapper()
+    
     var body: some View {
-        ComposeView()
-            .ignoresSafeArea()
+        VStack {
+            UIEnginePicker(settings: appSettings)
+                .padding(.horizontal, 8)
+            
+            if appSettings.useComposeUi {
+                ComposeView()
+            } else {
+                NativeRootView(vm: exercisesViewModel)
+            }
+        }
     }
 }
+
+
