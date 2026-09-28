@@ -27,8 +27,9 @@ fun Routes() {
 
             ChooseExercisePager(
                 state = state.value,
-                onEquipmentSelected = viewModel::selectEquipment,
-                onCategoriesSelected = viewModel::selectCategories,
+                onEquipmentTapped = { viewModel.onEquipmentTapped(it) },
+                onCategoryTapped = { viewModel.onCategoryTapped(it) },
+                onPageChanged = { viewModel.updatePage(it) }
             )
         }
     }

@@ -2,6 +2,7 @@ package com.example.curls.di
 
 import com.example.curls.cache.Database
 import com.example.curls.features.exercises.datasource.ExercisesRepository
+import com.example.curls.features.exercises.datasource.network.ExercisesApi
 import com.example.curls.features.exercises.ui.ExercisesViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -21,12 +22,8 @@ val appModule = module {
             })
         }
     }}
-    single<com.example.curls.features.exercises.datasource.network.ExercisesApi> {
-        com.example.curls.features.exercises.datasource.network.ExercisesApi(
-            get()
-        )
-    }
+    single<ExercisesApi> { ExercisesApi(get()) }
     single<Database> { Database(get()) }
     single<ExercisesRepository> { ExercisesRepository(get(), get()) }
-    factory { ExercisesViewModel(get()) }
+    single { ExercisesViewModel(get()) }
 }

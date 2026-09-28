@@ -10,6 +10,7 @@ data class ExercisesScreenUiState(
     val selectedCategories: List<Category> = emptyList(),
     val availableEquipment: List<Equipment> = emptyList(),
     val selectedEquipment: List<Equipment> = emptyList(),
+    val currentPage: Int = 0,
     val isLoading: Boolean = false,
     val error: String? = null,
 )

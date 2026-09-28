@@ -21,10 +21,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,17 +39,29 @@ import curls.shared.generated.resources.Res
 import curls.shared.generated.resources.button_label_confirm
 import curls.shared.generated.resources.choose_exercise_first_page_title
 import curls.shared.generated.resources.choose_exercise_second_page_title
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collectLatest
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ChooseExercisePager(
     state: ExercisesScreenUiState,
-    onEquipmentSelected: (List<Equipment>) -> Unit,
-    onCategoriesSelected: (List<Category>) -> Unit,
+    onEquipmentTapped: (Equipment) -> Unit,
+    onCategoryTapped: (Category) -> Unit,
+    onPageChanged: (Int) -> Unit,
 ) {
-    val pagerState = rememberPagerState(initialPage = 0, pageCount = { 3 })
-    val scope = rememberCoroutineScope()
+    val pagerState = rememberPagerState(initialPage = state.currentPage, pageCount = { 3 })
+
+    LaunchedEffect(state.currentPage) {
+        if (pagerState.currentPage != state.currentPage) {
+            pagerState.animateScrollToPage(state.currentPage)
+        }
+    }
+
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.currentPage }.collectLatest {
+            onPageChanged(it)
+        }
+    }
 
     HorizontalPager(
         modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp),
@@ -63,20 +73,16 @@ fun ChooseExercisePager(
                 message = stringResource(Res.string.choose_exercise_first_page_title),
                 availableOptions = state.availableEquipment,
                 selection = state.selectedEquipment,
-                onSelect = {
-                    onEquipmentSelected(it)
-                    scope.launch { pagerState.animateScrollToPage(1) }
-                },
+                onTap = { onEquipmentTapped(it) },
+                nextPage = { onPageChanged(1) }
             )
 
             1 -> MultipleSelectionPage(
                 message = stringResource(Res.string.choose_exercise_second_page_title),
                 availableOptions = state.availableCategories,
                 selection = state.selectedCategories,
-                onSelect = {
-                    onCategoriesSelected(it)
-                    scope.launch { pagerState.animateScrollToPage(2) }
-                }
+                onTap = { onCategoryTapped(it) },
+                nextPage = { onPageChanged(2) }
             )
 
             2 -> ResultPage(exercises = state.exercises)
@@ -104,10 +110,9 @@ private fun <T : Named> MultipleSelectionPage(
     message: String,
     availableOptions: List<T>,
     selection: List<T>,
-    onSelect: (List<T>) -> Unit = {},
+    onTap: (T) -> Unit = {},
+    nextPage: () -> Unit = {},
 ) {
-    val selection: MutableState<List<T>> = remember { mutableStateOf(selection) }
-
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             text = message,
@@ -123,7 +128,7 @@ private fun <T : Named> MultipleSelectionPage(
         ) {
             availableOptions.forEach { currentOption ->
                 val chipShape = RoundedCornerShape(16.dp)
-                val isSelected = currentOption in selection.value
+                val isSelected = currentOption in selection
 
                 Text(
                     text = currentOption.name,
@@ -139,13 +144,7 @@ private fun <T : Named> MultipleSelectionPage(
                             shape = chipShape,
                         )
                         .clip(chipShape)
-                        .clickable {
-                            if (isSelected) {
-                                selection.value = selection.value.filter { it != currentOption }
-                            } else {
-                                selection.value += currentOption
-                            }
-                        }
+                        .clickable { onTap(currentOption) }
                         .padding(
                             horizontal = 16.dp,
                             vertical = 8.dp,
@@ -157,14 +156,14 @@ private fun <T : Named> MultipleSelectionPage(
         Spacer(Modifier.weight(1f))
 
         Button(
-            enabled = selection.value.isNotEmpty(),
+            enabled = selection.isNotEmpty(),
             modifier = Modifier
                 .border(
                     width = 2.dp,
                     color = Color.Black,
                     shape = ButtonDefaults.shape,
                 ),
-            onClick = { onSelect(selection.value) },
+            onClick = { nextPage() },
         ) {
             Text(
                 modifier = Modifier.fillMaxWidth(),
@@ -212,8 +211,9 @@ fun ChooseExercisePagerPreview() {
                 availableEquipment = debugEquipment,
                 availableCategories = debugCategories,
             ),
-            onCategoriesSelected = {},
-            onEquipmentSelected = {},
+            onPageChanged = {},
+            onEquipmentTapped = {},
+            onCategoryTapped = {},
         )
     }
 }
