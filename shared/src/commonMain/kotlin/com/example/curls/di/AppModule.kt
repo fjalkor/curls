@@ -1,6 +1,7 @@
 package com.example.curls.di
 
 import com.example.curls.cache.Database
+import com.example.curls.features.exercisedetails.ExerciseDetailsViewModel
 import com.example.curls.features.exercises.datasource.ExercisesRepository
 import com.example.curls.features.exercises.datasource.network.ExercisesApi
 import com.example.curls.features.exercises.ui.ExercisesViewModel
@@ -9,6 +10,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 expect val platformModule: Module
@@ -26,4 +28,5 @@ val appModule = module {
     single<Database> { Database(get()) }
     single<ExercisesRepository> { ExercisesRepository(get(), get()) }
     single { ExercisesViewModel(get()) }
+    viewModel { (exerciseId: Long) -> ExerciseDetailsViewModel(exerciseId, get()) }
 }
