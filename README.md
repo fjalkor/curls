@@ -29,3 +29,7 @@ Use the run button in your IDE's editor gutter, or run tests using Gradle tasks:
 ---
 
 Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+
+WIP Showcase: 
+
+<img width="295" height="640" alt="Simulator Screen Recording - iPhone 17 Pro - 2026-09-30 at 14 26 14" src="https://github.com/user-attachments/assets/a6a28ae0-78f5-47e7-9d0d-b7f4b0f29044" />
