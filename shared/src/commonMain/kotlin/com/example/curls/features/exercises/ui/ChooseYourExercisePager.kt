@@ -1,8 +1,10 @@
 package com.example.curls.features.exercises.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -56,7 +58,7 @@ fun ChooseExercisePager(
     ) { pageNumber ->
         when (pageNumber) {
             0 -> MultipleSelectionPage(
-                modifier = Modifier.padding(horizontal = 8.dp),
+                modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 32.dp),
                 message = stringResource(Res.string.choose_exercise_first_page_title),
                 availableOptions = state.availableEquipment,
                 selection = state.selectedEquipment,
@@ -65,7 +67,7 @@ fun ChooseExercisePager(
             )
 
             1 -> MultipleSelectionPage(
-                modifier = Modifier.padding(horizontal = 8.dp),
+                modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 32.dp),
                 message = stringResource(Res.string.choose_exercise_second_page_title),
                 availableOptions = state.availableCategories,
                 selection = state.selectedCategories,
@@ -98,6 +100,7 @@ fun ResultPage(
                 onClick = { onSelectExercise(it) },
             )
         }
+        item { Spacer(Modifier.height(32.dp)) }
     }
 }
 

@@ -1,5 +1,7 @@
 package com.example.curls
 
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
@@ -33,7 +35,10 @@ fun Routes() {
     val navHostController = rememberNavController()
 
     NavHost(navHostController, startDestination = Screen.Home) {
-        composable<Screen.Home> {
+        composable<Screen.Home>(
+            enterTransition = { fadeIn() },
+            exitTransition = { fadeOut() },
+        ) {
             val viewModel = koinViewModel<ExercisesViewModel>()
             val state = viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -45,7 +50,10 @@ fun Routes() {
                 onSelectExercise = { navHostController.navigate(Screen.Details(it.id)) },
             )
         }
-        composable<Screen.Details> {
+        composable<Screen.Details>(
+            enterTransition = { fadeIn() },
+            exitTransition = { fadeOut() },
+        ) {
             val selectedExerciseId = it.toRoute<Screen.Details>().exerciseId
             val viewModel = koinViewModel<ExerciseDetailsViewModel>(parameters = {
                 parametersOf(selectedExerciseId)

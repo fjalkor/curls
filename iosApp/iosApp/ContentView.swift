@@ -21,6 +21,7 @@ struct ContentView: View {
             
             if appSettings.useComposeUi {
                 ComposeView()
+                    .ignoresSafeArea([.all], edges: .bottom)
             } else {
                 NativeRootView(vm: exercisesViewModel)
             }

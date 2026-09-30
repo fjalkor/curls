@@ -14,9 +14,10 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayCircle
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -46,13 +47,22 @@ fun ExerciseDetailsScreen(
     exercise: Exercise,
     onVideoClick: (Video) -> Unit,
 ) {
-    Column(modifier = modifier) {
+    Column(modifier = modifier.verticalScroll(rememberScrollState())) {
         ImageGallery(exercise)
-        TitleAndCategory(exercise)
-        Description(exercise)
-        Muscles(exercise)
-        Equipment(exercise)
-        VideoGallery(exercise, onVideoClick)
+
+        Spacer(Modifier.height(16.dp))
+
+        Column(modifier = Modifier.padding(horizontal = 8.dp)) {
+            TitleAndCategory(exercise)
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Description(exercise)
+                Muscles(exercise)
+                Equipment(exercise)
+                VideoGallery(exercise, onVideoClick)
+            }
+        }
+
+        Spacer(Modifier.height(32.dp))
     }
 }
 
@@ -81,13 +91,8 @@ private fun ImageGallery(exercise: Exercise) {
 
 @Composable
 private fun TitleAndCategory(exercise: Exercise) {
-    Column(Modifier.padding(horizontal = 16.dp)) {
-        AssistChip(
-            onClick = {},
-            label = { Text(exercise.category.name) },
-            enabled = false,
-        )
-        Spacer(Modifier.height(8.dp))
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        SelectionChip(text = exercise.category.name)
         Text(
             exercise.translation.name,
             style = MaterialTheme.typography.headlineMedium,
@@ -101,12 +106,13 @@ private fun TitleAndCategory(exercise: Exercise) {
 private fun Description(exercise: Exercise) {
     exercise.translation.description?.takeIf { it.isNotEmpty() }?.let {
         val state = rememberRichTextState()
-        LaunchedEffect(it) { state.setHtml(it) }
-        RichText(
-            state = state,
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.padding(horizontal = 16.dp),
-        )
+        Column {
+            LaunchedEffect(it) { state.setHtml(it) }
+            RichText(
+                state = state,
+                style = MaterialTheme.typography.bodyLarge,
+            )
+        }
     }
 }
 
@@ -115,15 +121,17 @@ private fun Muscles(exercise: Exercise) {
     val muscles = exercise.muscles + exercise.secondaryMuscles
 
     if (muscles.isNotEmpty()) {
-        SectionTitle("Muscles")
+        Column {
+            SectionTitle("Muscles")
 
-        FlowList {
-            muscles.forEach {
-                SelectionChip(
-                    text = it.name,
-                    isSelected = it in exercise.muscles,
-                    style = MaterialTheme.typography.bodyLarge,
-                )
+            FlowList {
+                muscles.forEach {
+                    SelectionChip(
+                        text = it.name,
+                        isSelected = it in exercise.muscles,
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+                }
             }
         }
     }
@@ -132,24 +140,28 @@ private fun Muscles(exercise: Exercise) {
 @Composable
 private fun Equipment(exercise: Exercise) {
     if (exercise.equipment.isNotEmpty()) {
-        SectionTitle("Equipment")
+        Column {
+            SectionTitle("Equipment")
 
-        FlowList { exercise.equipment.forEach { SelectionChip(text = it.name) } }
+            FlowList { exercise.equipment.forEach { SelectionChip(text = it.name) } }
+        }
     }
 }
 
 @Composable
 private fun VideoGallery(exercise: Exercise, onVideoClick: (Video) -> Unit) {
     if (exercise.videos.isNotEmpty()) {
-        SectionTitle("Videos")
-        LazyRow(
-            contentPadding = PaddingValues(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            items(exercise.videos) { video ->
-                Card(onClick = { onVideoClick(video) }, modifier = Modifier.size(200.dp, 120.dp)) {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Icon(Icons.Default.PlayCircle, null, Modifier.size(48.dp))
+        Column {
+            SectionTitle("Videos")
+            LazyRow(
+                contentPadding = PaddingValues(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                items(exercise.videos) { video ->
+                    Card(onClick = { onVideoClick(video) }, modifier = Modifier.size(200.dp, 120.dp)) {
+                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Icon(Icons.Default.PlayCircle, null, Modifier.size(48.dp))
+                        }
                     }
                 }
             }
@@ -162,7 +174,7 @@ private fun SectionTitle(text: String) {
     Text(
         text = text,
         style = MaterialTheme.typography.titleMedium,
-        modifier = Modifier.padding(8.dp),
+        modifier = Modifier.padding(vertical = 8.dp),
     )
 }
 
